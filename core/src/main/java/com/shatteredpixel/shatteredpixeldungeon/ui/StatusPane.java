@@ -74,6 +74,7 @@ public class StatusPane extends Component {
 	// ......... Begin ......... Edited by KarH
 	// 法力条
 	private Image mana;
+	private Image manaRule;
 	// `````````` End ``````````
 
 	// 经验条
@@ -150,9 +151,15 @@ public class StatusPane extends Component {
 
 		// ......... Begin ......... Edited by KarH
 		// 法力条填充内容在素材中的采样。法力条的背景框已经画在素材中，被bg加载。
-		if (large)  mana = new Image(asset, 0, 47, 128, 3);
+		if (large)  mana = new Image(asset, 0, 49, 128, 3);
 		else        mana = new Image(asset, 0, 45, 40, 2);
 		add(mana);
+
+		if (large) manaRule = null;
+		else {
+			manaRule = new Image(asset, 0, 47, 40, 2);
+			add(manaRule);
+		}
 		// `````````` End ``````````
 
 		heroInfoOnBar = new Button(){
@@ -250,9 +257,9 @@ public class StatusPane extends Component {
 			hp.y = shieldedHP.y = rawShielding.y = y + 3;
 
 			// ......... Begin ......... Edited by KarH
-			// 蓝条的位置
-			mana.x = x + 30;
-			mana.y = y + 9;
+			// 蓝条的位置。小UI有标尺
+			manaRule.x = mana.x = x + 30;
+			manaRule.y = mana.y = y + 9;
 			// `````````` End ``````````
 
 			hpText.scale.set(PixelScene.align(0.5f));
