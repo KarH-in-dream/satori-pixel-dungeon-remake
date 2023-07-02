@@ -91,6 +91,7 @@ public enum HeroClass {
 		if (!Challenges.isItemBlocked(i)) i.collect();
 
 		new VelvetPouch().collect();
+		// 此后不再生成种子袋
 		Dungeon.LimitedDrops.VELVET_POUCH.drop();
 
 		Waterskin waterskin = new Waterskin();
@@ -250,11 +251,11 @@ public enum HeroClass {
 				return Assets.Splashes.HUNTRESS;
 		}
 	}
-	
+
 	public boolean isUnlocked(){
 		//always unlock on debug builds
 		if (DeviceCompat.isDebug()) return true;
-		
+
 		switch (this){
 			case WARRIOR: default:
 				return true;
@@ -266,7 +267,7 @@ public enum HeroClass {
 				return Badges.isUnlocked(Badges.Badge.UNLOCK_HUNTRESS);
 		}
 	}
-	
+
 	public String unlockMsg() {
 		return shortDesc() + "\n\n" + Messages.get(HeroClass.class, name()+"_unlock");
 	}

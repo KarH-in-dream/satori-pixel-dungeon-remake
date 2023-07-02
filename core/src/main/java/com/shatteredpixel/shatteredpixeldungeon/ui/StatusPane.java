@@ -48,10 +48,14 @@ import com.watabou.utils.GameMath;
 
 import java.util.ArrayList;
 
+// 状态栏，手机左上角的一整块
 public class StatusPane extends Component {
 
+	// 背景，包括英雄头像、等级以及血条的背景框
 	private NinePatch bg;
+	// 头像
 	private Image avatar;
+	// 点击打开英雄详情页
 	private Button heroInfo;
 	public static float talentBlink;
 	private float warning;
@@ -60,12 +64,19 @@ public class StatusPane extends Component {
 
 	private int lastTier = 0;
 
+	// 血条 - （他居然没有把整个血条封装一下...）
 	private Image rawShielding;
 	private Image shieldedHP;
 	private Image hp;
 	private BitmapText hpText;
 	private Button heroInfoOnBar;
 
+	// ......... Begin ......... Edited by KarH
+	// 法力条
+	private Image mana;
+	// `````````` End ``````````
+
+	// 经验条
 	private Image exp;
 	private BitmapText expText;
 
@@ -79,6 +90,7 @@ public class StatusPane extends Component {
 	private BusyIndicator busy;
 	private CircleArc counter;
 
+	// StatusPane状态栏的资源地址
 	private static String asset = Assets.Interfaces.STATUS;
 
 	private boolean large;
@@ -98,7 +110,7 @@ public class StatusPane extends Component {
 				Camera.main.panTo( Dungeon.hero.sprite.center(), 5f );
 				GameScene.show( new WndHero() );
 			}
-			
+
 			@Override
 			public GameAction keyAction() {
 				return SPDAction.HERO_INFO;
@@ -135,6 +147,13 @@ public class StatusPane extends Component {
 		hpText = new BitmapText(PixelScene.pixelFont);
 		hpText.alpha(0.6f);
 		add(hpText);
+
+		// ......... Begin ......... Edited by KarH
+		// 法力条填充内容在素材中的采样。法力条的背景框已经画在素材中，被bg加载。
+		if (large)  mana = new Image(asset, 0, 47, 128, 3);
+		else        mana = new Image(asset, 0, 45, 40, 2);
+		add(mana);
+		// `````````` End ``````````
 
 		heroInfoOnBar = new Button(){
 			@Override
@@ -196,7 +215,18 @@ public class StatusPane extends Component {
 			exp.y = y + 30;
 
 			hp.x = shieldedHP.x = rawShielding.x = x + 30;
-			hp.y = shieldedHP.y = rawShielding.y = y + 19;
+			// ......... Begin ......... Edited by KarH
+			// hp.y = shieldedHP.y = rawShielding.y = y + 19;
+			// -------- Replace --------
+			// 背景图片已修改，hp条上移5px
+			hp.y = shieldedHP.y = rawShielding.y = y + 14;
+			// `````````` End ``````````
+
+			// ......... Begin ......... Edited by KarH
+			// 蓝条的位置
+			mana.x = x + 30;
+			mana.y = y + 25;
+			// `````````` End ``````````
 
 			hpText.x = hp.x + (128 - hpText.width())/2f;
 			hpText.y = hp.y + 1;
@@ -219,6 +249,12 @@ public class StatusPane extends Component {
 			hp.x = shieldedHP.x = rawShielding.x = x + 30;
 			hp.y = shieldedHP.y = rawShielding.y = y + 3;
 
+			// ......... Begin ......... Edited by KarH
+			// 蓝条的位置
+			mana.x = x + 30;
+			mana.y = y + 9;
+			// `````````` End ``````````
+
 			hpText.scale.set(PixelScene.align(0.5f));
 			hpText.x = hp.x + 1;
 			hpText.y = hp.y + (hp.height - (hpText.baseLine()+hpText.scale.y))/2f;
@@ -235,13 +271,13 @@ public class StatusPane extends Component {
 
 		counter.point(busy.center());
 	}
-	
+
 	private static final int[] warningColors = new int[]{0x660000, 0xCC0000, 0x660000};
 
 	@Override
 	public void update() {
 		super.update();
-		
+
 		int health = Dungeon.hero.HP;
 		int shield = Dungeon.hero.shielding();
 		int max = Dungeon.hero.HT;
@@ -268,6 +304,13 @@ public class StatusPane extends Component {
 			rawShielding.scale.x = 0;
 		}
 
+		// ......... Begin ......... Edited by KarH
+		// 蓝条的长度缩放
+		int mana_cur = Dungeon.hero.mana_cur;
+		int mana_max = Dungeon.hero.mana_max;
+		mana.scale.x = mana_cur / (float)mana_max;
+		// `````````` End ``````````
+
 		if (shield <= 0){
 			hpText.text(health + "/" + max);
 		} else {
@@ -275,6 +318,7 @@ public class StatusPane extends Component {
 		}
 
 		if (large) {
+			// 经验条的素材在两个视图都没有做成刚刚好的样子
 			exp.scale.x = (128 / exp.width) * Dungeon.hero.exp / Dungeon.hero.maxExp();
 
 			hpText.measure();
@@ -283,7 +327,6 @@ public class StatusPane extends Component {
 			expText.text(Dungeon.hero.exp + "/" + Dungeon.hero.maxExp());
 			expText.measure();
 			expText.x = hp.x + (128 - expText.width())/2f;
-
 		} else {
 			exp.scale.x = (width / exp.width) * Dungeon.hero.exp / Dungeon.hero.maxExp();
 		}
@@ -333,6 +376,11 @@ public class StatusPane extends Component {
 		compass.alpha(value);
 		busy.alpha(value);
 		counter.alpha(value);
+
+		// ......... Begin ......... Edited by KarH
+		// 别忘了新来的
+		mana.alpha(value);
+		// `````````` End ``````````
 	}
 
 	public void showStarParticles(){
