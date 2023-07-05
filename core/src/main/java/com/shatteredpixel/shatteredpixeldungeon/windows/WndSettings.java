@@ -53,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 
+// 整个的设置窗口，包括6个标签页（移动端为5个），每个标签页都是这个类的私有子类
 public class WndSettings extends WndTabbed {
 
 	private static final int WIDTH_P	    = 122;
@@ -62,20 +63,33 @@ public class WndSettings extends WndTabbed {
 	private static final int BTN_HEIGHT	    = 16;
 	private static final float GAP          = 1;
 
+	// index0，显示设置 - 全屏，亮度，网格
 	private DisplayTab  display;
+	// index1，界面设置 - 大小屏幕，尺寸，字体
 	private UITab       ui;
+	// index2，输入设置 - 键鼠，光标 （PC专属）
 	private InputTab    input;
+	// index3，网络设置 - 检查更新、新闻
 	private DataTab     data;
+	// index4，声音设置
 	private AudioTab    audio;
+	// index5，语言设置
 	private LangsTab    langs;
 
+	// 上一次更改的设置序号
 	public static int last_index = 0;
 
+	// 构造函数
 	public WndSettings() {
 		super();
 
+		// 注意，这只是个局部变量
+		// 在接下来的计算中，height被取作所有标签页的高度的最大值
+		// 好处是没有标签页需要变成滚动区域，切换标签页窗口高度不变；坏处是太长了要出事
 		float height;
 
+		// 查阅源码，landscape在以下情形下成立：使用大屏UI，或者窗口宽大于高
+		// 即，游戏是宽的时候使用大宽度的Settings界面。注意，这只是个局部变量
 		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
 
 		display = new DisplayTab();
@@ -110,6 +124,7 @@ public class WndSettings extends WndTabbed {
 		input.setSize(width, 0);
 		height = Math.max(height, input.height());
 
+		// 有硬件键盘，或是连了控制器才将input添加到场景
 		if (DeviceCompat.hasHardKeyboard() || ControllerHandler.isControllerConnected()) {
 			add( input );
 			Image icon;
@@ -170,6 +185,7 @@ public class WndSettings extends WndTabbed {
 				if (value) last_index = 5;
 			}
 
+			// 根据所选语言的状态，为语言页签打上高光
 			@Override
 			protected void createChildren() {
 				super.createChildren();
